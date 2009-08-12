@@ -362,7 +362,6 @@ var cookieDuration = 366;
 var birdseye_window = null;
 var annotation_id = null;
 var thisMap, Gisdk;
-
 var map;
 var marker;
 
@@ -374,16 +373,12 @@ var userCustomSizeDiff = [];
 	userCustomSizeDiff[1] = userCustomSize.split("|")[1] - document.documentElement.clientHeight;
 
 var maptitudeFunctions = getCookie("maptFcn") || 1;
-
 var zoomControl = getCookie("userZoomControl") || "ZOOM_PAN";
 var prevZoomControl = zoomControl;
 var lastWidth,lastHeight;
-
-
 //function getGeonamesAtCoord (gLon,gLat) {
 	// http://ws.geonames.org/findNearbyPlaceNameJSON?lat=47.3&lng=9
 //}
-
 
 function setHideMapt() {
 	if (document.getElementById("hideMaptButton").checked) {
@@ -415,7 +410,6 @@ function zoomMaptitudeTo(gLon,gLat){
 		alert ('Please make sure that maptitude is open, and the map you wish to view is loaded.');
 		//console.log(err);
 	}
-	
 }
 
 function zoomMapt () {
@@ -425,11 +419,8 @@ function zoomMapt () {
 	   }
 }
 
-
-
 function initialize() {
 	self.resizeTo(userCustomSize.split("|")[0],userCustomSize.split("|")[1]);
-
 	var navStyle = {};
 	if (zoomControl == "ZOOM_PAN") {
 		navStyle.style = google.maps.NavigationControlStyle.ZOOM_PAN;
