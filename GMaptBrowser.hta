@@ -299,7 +299,7 @@ As this tool uses the Google Maps API, its use is subject to the Google Maps API
 </p><br>
 GMaptBrowser allows you to use a Google Map as a means to browse to a location, and then go to that location using an external program.  It is preconfigured to work with Maptitude, but can also work with other applications by means of a simple linking script, designed to take WGS84 Lat/Lon as command line parameters.<br>
 <p>External Linking Scripts<br>
-To use, create a script titled llApp-*.exe, where * is the name you want on your control button.  The script must take a WGS84 lat/lon coordinate pair as command line parameters, eg: llApp-EFS.exe 42.23 -71.32<br>
+To use, create a script titled llApp-*.exe, where * is the name you want on your control button.  The script must take a WGS84 lat/lon coordinate pair as command line parameters, eg: <code>llApp-EFS.exe 42.23 -71.32</code><br>
 Place the script in the same directory as GMaptBrowser, and GMaptBrowser will detect the script when it is reset.<br>
 <br>Scripts can be easily written in AutoHotkey, AutoIt, any other scripting/programming language of choice.<br></P>
 
@@ -358,6 +358,7 @@ function setCookie(c_name,value,expiredays) {
 <!-- script type="text/javascript" src="http://jqueryjs.googlecode.com/files/jquery-1.3.2.min.js"></script -->
 <script type="text/javascript">
 
+var maxZoomLevel = 4; // lowers the likelihood that users will stumble upon Bug when panning off the edge of the world.
 var cookieDuration = 366;
 var birdseye_window = null;
 var annotation_id = null;
@@ -486,7 +487,11 @@ function initialize() {
 				}
 		geocoder.geocode({'latLng':marker.get_position()},reverseGeocodeHandler);
 		}
-	});		
+	});	
+// This next event listener appears to be necessary, as panning off the edge of the world causes an error.  While ignorable in many browsers, it gives an error dialog in HTAs.
+  	google.maps.event.addListener(map,'zoom_changed',function(event) {
+		if (map.get_zoom() < maxZoomLevel) map.set_zoom(maxZoomLevel);
+	});	
   
   }
  Proj4js.defs["EPSG:4326"] = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
