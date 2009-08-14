@@ -425,7 +425,8 @@ maptScales[23]=39;
 
 
 var userCustomSize = getCookie("userCustomSize") || "600|500";
-	window.resizeTo(userCustomSize.split("|")[0],userCustomSize.split("|")[1]);
+
+window.resizeTo(userCustomSize.split("|")[0],userCustomSize.split("|")[1]);
 
 var userCustomSizeDiff = [];
 	userCustomSizeDiff[0] = userCustomSize.split("|")[0] - document.documentElement.clientWidth;
