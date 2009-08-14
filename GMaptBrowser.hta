@@ -266,7 +266,8 @@ font-style:italic;
 <fieldset><legend>Maptitude</legend>
 <input type='checkbox' id='hideMaptButton' onclick='setHideMapt()'> Disable Maptitude Connections<br>
 		<input id="zoomMaptOnSearch" type=CHECKBOX name="zoomMaptOnSearch"><span>Zoom on Search</span><br>
-		<input id="zoomMaptOnClick" type=CHECKBOX name="zoomMaptOnClick"><span>Zoom on Click</span>
+		<input id="zoomMaptOnClick" type=CHECKBOX name="zoomMaptOnClick"><span>Zoom on Click</span><br>
+		<input id="useGoogleZoomForMapt" type=CHECKBOX name="useGoogleZoomForMapt"><span>Use Google Zoom level when Zooming Maptitude</span>
 </fieldset>
 <fieldset><legend>User Application</legend>
 Current Application: <span id='currentUserApp'><i>inactive</i></span>&nbsp;<br>
@@ -366,6 +367,63 @@ var thisMap, Gisdk;
 var map;
 var marker;
 
+// Numbers courtesy of the ESRI blog
+//http://blogs.esri.com/Support/blogs/mappingcenter/archive/2009/03/19/How-can-you-tell-what-map-scales-are-shown-for-online-maps_3F00_.aspx
+var maptScales = [];
+/*maptScales[0] = 591657550;
+maptScales[1] = 295828775;
+maptScales[2] = 147914387;
+maptScales[3] = 73957193;
+maptScales[4] = 36978596;
+maptScales[5] = 18489298;
+maptScales[6] = 9244649;
+maptScales[7] = 4622324;
+maptScales[8] = 2311162;
+maptScales[9] = 1155581;
+maptScales[10] = 577790;
+maptScales[11] = 288895;
+maptScales[12] = 144447;
+maptScales[13] = 72223;
+maptScales[14] = 36111;
+maptScales[15] = 18055;
+maptScales[16] = 9027;
+maptScales[17] = 4513;
+maptScales[18] = 2256;
+maptScales[19] = 1128;
+maptScales[20] = 564;
+maptScales[21] = 282;
+maptScales[22] = 141;
+maptScales[23] = 70;*/
+
+maptScales[0]=327680000;
+maptScales[1]=163840000;
+maptScales[2]=81920000;
+maptScales[3]=40960000;
+maptScales[4]=20480000;
+maptScales[5]=10240000;
+maptScales[6]=5120000;
+maptScales[7]=2560000;
+maptScales[8]=1280000;
+maptScales[9]=640000;
+maptScales[10]=320000;
+maptScales[11]=160000;
+maptScales[12]=80000;
+maptScales[13]=40000;
+maptScales[14]=20000;
+maptScales[15]=10000;
+maptScales[16]=5000;
+maptScales[17]=2500;
+maptScales[18]=1250;
+maptScales[19]=625;
+maptScales[20]=312;
+maptScales[21]=156;
+maptScales[22]=78;
+maptScales[23]=39;
+
+
+
+
+
 var userCustomSize = getCookie("userCustomSize") || "600|500";
 	window.resizeTo(userCustomSize.split("|")[0],userCustomSize.split("|")[1]);
 
@@ -383,21 +441,29 @@ var lastWidth,lastHeight;
 
 function setHideMapt() {
 	if (document.getElementById("hideMaptButton").checked) {
-		document.getElementById("zoomMaptOnSearch").checked = false;
+		document.getElementById("zoomMaptzoomMaptOnSearch").checked = false;
 		document.getElementById("zoomMaptOnSearch").disabled=true;
 		document.getElementById("zoomMaptOnClick").checked = false;
 		document.getElementById("zoomMaptOnClick").disabled=true;
+		document.getElementById("useGoogleZoomForMapt").checked = false;
+		document.getElementById("useGoogleZoomForMapt").disabled=true;
 		document.getElementById("zoomMaptButton").style.display="none";
 		setCookie("maptFcn",0,366);
 	} else {
 		document.getElementById("zoomMaptButton").style.display="inline";
 		document.getElementById("zoomMaptOnClick").disabled=false;
 		document.getElementById("zoomMaptOnSearch").disabled=false;
+		document.getElementById("useGoogleZoomForMapt").disabled=false;
 		setCookie("maptFcn",1,366);
 	}
 }
 
 function zoomMaptitudeTo(gLon,gLat){
+	var googleZoom = 2000;
+	if (document.getElementById("useGoogleZoomForMapt").checked) 
+		{
+			googleZoom = parseInt(maptScales[map.get_zoom()]);
+		}
 	var lonMil = Math.round(gLon*1000000);
     var latMil = Math.round(gLat*1000000);
 	try {
@@ -405,7 +471,7 @@ function zoomMaptitudeTo(gLon,gLat){
 		thisMap = Gisdk.Function("GetMap");
 		var thisCoord = Gisdk.Function("Coord",lonMil,latMil);
 		Gisdk.Function("CenterMap",thisMap,thisCoord);
-		Gisdk.Function("SetScale",thisMap,2000);
+		Gisdk.Function("SetScale",thisMap,googleZoom);
 		Gisdk.Function("RedrawMap",thisMap);
 	} catch (err) {
 		alert ('Please make sure that maptitude is open, and the map you wish to view is loaded.');
