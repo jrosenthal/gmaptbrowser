@@ -251,7 +251,6 @@ font-style:italic;
 <form name='settings'>
 <fieldset>
 <legend>Zoom Control</legend>
-<!--input type='checkbox' id='zoomcontrol' value='1' onclick='setZoomControl(this)'  > Display small Zoom Control (will refresh application)<br-->
 <input type='checkbox' id='userZoomControl_DOM' value='1'  onclick='handleSettingsCheckbox(this)'> Display small Zoom Control (will refresh application)<br>
 </fieldset><br>
 
@@ -264,12 +263,6 @@ font-style:italic;
 
 <fieldset>
 <legend>Applications</legend>
-<!--fieldset><legend>Maptitude</legend>
-<input type='checkbox' id='hideMaptButton' onclick='setHideMapt()'> Disable Maptitude Connections<br>
-		<input id="zoomMaptOnSearch" type=CHECKBOX name="zoomMaptOnSearch"><span>Zoom on Search</span><br>
-		<input id="zoomMaptOnClick" type=CHECKBOX name="zoomMaptOnClick"><span>Zoom on Click</span><br>
-		<input id="useGoogleZoomForMapt" type=CHECKBOX name="useGoogleZoomForMapt"><span>Use Google Zoom level when Zooming Maptitude</span>
-</fieldset-->
 <fieldset><legend>Maptitude</legend>
 <input type='checkbox' id='hideMaptButton_DOM' onclick='handleSettingsCheckbox(this)'> Disable Maptitude Connections<br>
 		<input id="zoomMaptOnSearch_DOM" type=CHECKBOX name="zoomMaptOnSearch_DOM" onclick='handleSettingsCheckbox(this)'><span>Zoom on Search</span><br>
@@ -278,8 +271,7 @@ font-style:italic;
 </fieldset>
 <fieldset><legend>User Application</legend>
 Current Application: <span id='currentUserApp'><i>inactive</i></span>&nbsp;<br>
-&nbsp;&nbsp;&nbsp;<!--span id='resetCurrentUserApp'><a href="#" onclick='setCookie("userApp","",new Date() -100);initializeExternalAppButton()'>Reset current application</a></span><br-->
-<span id='resetCurrentUserApp'><a href="#" onclick="settingsObj['userAppName'] = getDefaultSetting('userAppName');applySetting('userAppName')">Reset current application</a></span><br>
+&nbsp;&nbsp;&nbsp;<span id='resetCurrentUserApp'><a href="#" onclick="settingsObj['userAppName'] = getDefaultSetting('userAppName');applySetting('userAppName')">Reset current application</a></span><br>
 		<input id="runAppOnSearch_DOM" type=CHECKBOX  name="runAppOnSearch_DOM" onclick='handleSettingsCheckbox(this)'><span>Run User Application on Search</span><br>
 		<input id="runAppOnClick_DOM" type=CHECKBOX  name="runAppOnClick_DOM" onclick='handleSettingsCheckbox(this)'><span>Run User Application on Click</span>
 </fieldset>
@@ -341,33 +333,8 @@ var thisMap, Gisdk;
 var map;
 var marker;
 
-// Numbers courtesy of the ESRI blog
 
 var maptScales = [];
-/*maptScales[0] = 591657550;
-maptScales[1] = 295828775;
-maptScales[2] = 147914387;
-maptScales[3] = 73957193;
-maptScales[4] = 36978596;
-maptScales[5] = 18489298;
-maptScales[6] = 9244649;
-maptScales[7] = 4622324;
-maptScales[8] = 2311162;
-maptScales[9] = 1155581;
-maptScales[10] = 577790;
-maptScales[11] = 288895;
-maptScales[12] = 144447;
-maptScales[13] = 72223;
-maptScales[14] = 36111;
-maptScales[15] = 18055;
-maptScales[16] = 9027;
-maptScales[17] = 4513;
-maptScales[18] = 2256;
-maptScales[19] = 1128;
-maptScales[20] = 564;
-maptScales[21] = 282;
-maptScales[22] = 141;
-maptScales[23] = 70;*/
 
 maptScales[0]=327680000;
 maptScales[1]=163840000;
@@ -398,41 +365,6 @@ maptScales[23]=39;
 
 var userCustomSize, maptitudeFunctions, zoomControl, prevZoomControl, lastWidth,lastHeight;
 var  userCustomSizeDiff;
-/*
-var userCustomSize = getCookie("userCustomSize") || "600x500";
-
-//window.resizeTo(userCustomSize.split("_")[0],userCustomSize.split("_")[1]);
-
-var userCustomSizeDiff = [];
-	userCustomSizeDiff[0] = userCustomSize.split("|")[0] - document.documentElement.clientWidth;
-	userCustomSizeDiff[1] = userCustomSize.split("|")[1] - document.documentElement.clientHeight;
-
-var maptitudeFunctions = getCookie("maptFcn") || 1;
-var zoomControl = getCookie("userZoomControl") || "ZOOM_PAN";
-var prevZoomControl = zoomControl;
-var lastWidth,lastHeight;
-
-*/
-
-/*
-function setHideMapt() {
-	if (document.getElementById("hideMaptButton").checked) {
-		document.getElementById("zoomMaptOnSearch").checked = false;
-		document.getElementById("zoomMaptOnSearch").disabled=true;
-		document.getElementById("zoomMaptOnClick").checked = false;
-		document.getElementById("zoomMaptOnClick").disabled=true;
-		document.getElementById("useGoogleZoomForMapt").checked = false;
-		document.getElementById("useGoogleZoomForMapt").disabled=true;
-		document.getElementById("zoomMaptButton").style.display="none";
-		setCookie("maptFcn",0,366);
-	} else {
-		document.getElementById("zoomMaptButton").style.display="inline";
-		document.getElementById("zoomMaptOnClick").disabled=false;
-		document.getElementById("zoomMaptOnSearch").disabled=false;
-		document.getElementById("useGoogleZoomForMapt").disabled=false;
-		setCookie("maptFcn",1,366);
-	}
-} */
 
 function zoomMaptitudeTo(gLon,gLat){
 	var googleZoom = 2000;
@@ -466,15 +398,10 @@ function zoomMapt () {
 
 function initialize() {
 	initSettings();
-	//console.log(settingsObj);
 		if (settingsObj['userCustomSize'].indexOf('NaN') > -1) settingsObj['userCustomSize']=getDefaultSetting('userCustomSize');
 		userCustomSize = settingsObj['userCustomSize'];
-		//console.log(userCustomSize);
+
 		userCustomSizeDiff = [0,0]; // safe defaults - moved main code into onload that adds window.onresize
-	//	userCustomSizeDiff = [];
-		//	userCustomSizeDiff[0] = userCustomSize.split("_")[0] - document.documentElement.clientWidth;
-		//	userCustomSizeDiff[1] = userCustomSize.split("_")[1] - document.documentElement.clientHeight;
-			
 		
 		 maptitudeFunctions =settingsObj['maptFcn'];  // note, previously this was a 0/1, now is 'ON'/'OFF'
 		 zoomControl = settingsObj["userZoomControl"];
@@ -484,24 +411,17 @@ function initialize() {
 
 	
 	
-	//self.resizeTo(userCustomSize.split("_")[0],userCustomSize.split("_")[1]);
+
 	var navStyle = {};
 	if (zoomControl == "ZOOM_PAN") { // this is the odd setting out, as it can only be set on initialization
 		navStyle.style = google.maps.NavigationControlStyle.ZOOM_PAN;
-//		document.getElementById("zoomControl").checked=false;
+
 		} 
 	else {
 		navStyle.style = google.maps.NavigationControlStyle.SMALL;
-	//	document.getElementById("zoomControl").checked=true;
+
 	}
-/*	if (maptitudeFunctions == 0) {
-		document.getElementById("hideMaptButton").checked = true;
-		} 
-	else {
-		document.getElementById("zoomMaptButton").style.display='none';
-		document.getElementById("hideMaptButton").checked = false;
-	}
-	setHideMapt();*/
+
     geocoder = new google.maps.Geocoder();
     var latlng = new google.maps.LatLng(42.40721, -71.38244);
     var myOptions = {
@@ -539,8 +459,6 @@ function initialize() {
 		if (!marker) {generateMarker(event.latLng);}
 		if (marker) { // gratuitous test.
 			marker.set_position(event.latLng);
-			//if (document.getElementById("zoomMaptOnClick_DOM").checked) {
-
 			if ((settingsObj['maptFcn'] == "ON") && (settingsObj["zoomMaptOnClick"] == "ON")) {
 				zoomMaptitudeTo(event.latLng.lng(),event.latLng.lat()); 
 				}
@@ -572,15 +490,12 @@ function initialize() {
 		if ((currWidth != lastWidth) || (currHeight != lastHeight)) {
 			if (currHeight > minHeight) { document.getElementById('map_canvas').style.height = currHeight - 110 + 'px'; }
 			if (currWidth > minWidth) { document.getElementById('map_canvas').style.width = currWidth - 5+ "px"; }
-			//console.log(currWidth,currHeight, userCustomSizeDiff);
 			settingsObj['userCustomSize'] = (currWidth+userCustomSizeDiff[0])+"_"+(userCustomSizeDiff[1]+currHeight);
-			//setCookie("userCustomSize",(currWidth+[0])+"_"+(userCustomSizeDiff[1]+currHeight),366); // numbers seemed optimized for vista... too big for xp.
 			lastWidth = currWidth;
 			lastHeight = currHeight;
 			google.maps.event.trigger(map, 'resize');
 		}
 	};
-  //alert('bar' + settingsObj['userCustomSize']);
   }
   
  Proj4js.defs["EPSG:4326"] = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
@@ -703,7 +618,7 @@ function codeAddress() {
 				}
 			}
 		}
-		// put other fcns here
+		// put other fcns here - coordinate 'searches'
 		if ((settingsObj['maptFcn'] == "ON") && (settingsObj["zoomMaptOnSearch"] == "ON")) {
 			zoomMaptitudeTo(thisLoc.lng(),thisLoc.lat());
 			}
@@ -751,10 +666,7 @@ function generateMarker(loc)  {
 
 function open_birdseye() {
     if (birdseye_is_closed()) {
-	    //birdseye_window = null;
-        //birdseye_window = window.open('about:blank','birdseye_win','location=no,resizable=-1,menubar=no,toolbar=no,scrollbars=yes,width=800,height=600');
         var curr_url = "http://www.bing.com/maps/default.aspx?cp=" + marker.get_position().lat() + "~" + marker.get_position().lng() + "&style=o&lvl=2&v=2";
-        //birdseye_window.location = curr_url;
 		birdseye_window = window.open(curr_url,'birdseye_window','location=no,resizable=-1,menubar=no,toolbar=no,scrollbars=yes,width=900,height=600');
         if (birdseye_is_closed() != "unavail") {
             birdseye_window.focus();
@@ -782,7 +694,6 @@ function displaySettings() {
 	}
 
 function hideSettings() {
-//console.log('hidesettings', prevZoomControl,settingsObj["userZoomControl"]);
 	if (prevZoomControl != settingsObj["userZoomControl"]) {
 		location.reload();
 		}
@@ -800,15 +711,6 @@ function hideInfo() {
 	document.getElementById("settingsScreen").style.display='block';
 }
 
-/*
-function setZoomControl(foo) {
-console.log(foo.id);
-	if (document.getElementById('zoomControl').checked) { zoomControl = "SMALL"; }
-	else { zoomControl = "ZOOM_PAN"; }
-	setCookie("userZoomControl",zoomControl,cookieDuration);
-}
-*/
-
 function handleSettingsCheckbox(that) {
 	var thisCheckbox = that.id.replace(/_DOM/,"");
 	switch (thisCheckbox) {
@@ -819,7 +721,6 @@ function handleSettingsCheckbox(that) {
 		case 'hideMaptButton': //maptFcn - prev setHideMapt
 			if (that.checked) settingsObj['maptFcn'] = "OFF";
 			else settingsObj['maptFcn'] = "ON";
-			//console.log(settingsObj['maptFcn']);
 			applySetting('maptFcn');
 			break;
 		case 'zoomMaptOnSearch':
@@ -851,61 +752,6 @@ ie: llApp-EFS.exe 42.23 -71.32
 
 Programs can be easily written in AutoHotkey, AutoIt, any other scripting
 language of choice, or in more serious programming languages.
-*/
-/*
-function initializeExternalAppButton() {
-  var lastApp = getCookie("userApp") || "NO APP CHOSEN";
-  if (lastApp != "IGNORE") {
-	  var llApplicationType = ".exe";
-	  var llApplicationPrefix = "llApp-";
-	  var fso, f, fc, s, folderspec;
-	  var thisItem, answer,buttonObj;
-	  fso = new ActiveXObject("Scripting.FileSystemObject");
-	  folderspec=fso.GetAbsolutePathName("");
-	  f = fso.GetFolder(folderspec);
-	  fc = new Enumerator(f.files);
-	  
-	  s = "";
-	  buttonObj = document.getElementById("externalAppButton");
-	  for (; !fc.atEnd(); fc.moveNext())
-	  {
-	  thisItem = fc.item().Name;
-		if ((thisItem.substr(thisItem.length-4, 4) == llApplicationType) && (thisItem.substr(0,6) == llApplicationPrefix)) {
-			if (lastApp != "NO APP CHOSEN") {
-				if (lastApp == thisItem) answer = true;
-				else answer = false;
-				}
-			else answer = confirm("Link to "+thisItem+"?");
-			if (answer) {
-				setCookie("userApp",thisItem,cookieDuration);
-				s = fc.item().Path;
-				// show and wire button
-				buttonObj.value = thisItem.substring(6,thisItem.length-4);
-				buttonObj.style.position = "static";
-				buttonObj.style.left = "0px";
-				var shell = new ActiveXObject("WScript.shell");
-				document.getElementById('currentUserApp').innerHTML=thisItem;
-				buttonObj.onclick = function () {
-					if (marker)
-						shell.run(fc.item().Path + " " + marker.get_position().lat() + " " + marker.get_position().lng(), 1, false);
-					}
-				return;
-			} // end if confirmed 
-			else { //IF no lastApp, but app found, and not confirmed, hide button
-				buttonObj.style.position = "absolute";
-				buttonObj.style.left = "-10000px";	
-				document.getElementById('currentUserApp').innerHTML = '<i>inactive</i>';
-				setCookie("userApp","IGNORE",cookieDuration);
-			}
-		} //
-	  }
-		if (lastApp != "IGNORE" && lastApp != "NO APP CHOSEN") { // if there was a lastApp, and we actually reach this point (ie:lastApp doesn't match), clear lastApp, and run again.
-			setCookie("userApp","",new Date()-1000);	
-			location.reload();
-			}
-	  } 
-	}	
-initializeExternalAppButton();
 */
 
 
