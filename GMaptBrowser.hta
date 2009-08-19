@@ -470,11 +470,12 @@ function initialize() {
 		if (settingsObj['userCustomSize'].indexOf('NaN') > -1) settingsObj['userCustomSize']=getDefaultSetting('userCustomSize');
 		userCustomSize = settingsObj['userCustomSize'];
 		//console.log(userCustomSize);
+		userCustomSizeDiff = [0,0]; // safe defaults - moved main code into onload that adds window.onresize
+	//	userCustomSizeDiff = [];
+		//	userCustomSizeDiff[0] = userCustomSize.split("_")[0] - document.documentElement.clientWidth;
+		//	userCustomSizeDiff[1] = userCustomSize.split("_")[1] - document.documentElement.clientHeight;
+			
 		
-		userCustomSizeDiff = [];
-			userCustomSizeDiff[0] = userCustomSize.split("_")[0] - document.documentElement.clientWidth;
-			userCustomSizeDiff[1] = userCustomSize.split("_")[1] - document.documentElement.clientHeight;
-		//console.log('diff',userCustomSizeDiff);
 		 maptitudeFunctions =settingsObj['maptFcn'];  // note, previously this was a 0/1, now is 'ON'/'OFF'
 		 zoomControl = settingsObj["userZoomControl"];
 		 prevZoomControl = zoomControl;
@@ -517,21 +518,26 @@ function initialize() {
 	document.getElementById('map_canvas').style.height = Math.abs(lastHeight - 110) + 'px';
 	document.getElementById('map_canvas').style.width = Math.abs(lastWidth - 5)+ "px";
   
-	window.onresize = function () {
-	var minHeight = 110, minWidth = 5;
-		var currHeight = document.documentElement.clientHeight;
-		var currWidth = document.documentElement.clientWidth;
-		if ((currWidth != lastWidth) || (currHeight != lastHeight)) {
-			if (currHeight > minHeight) { document.getElementById('map_canvas').style.height = currHeight - 110 + 'px'; }
-			if (currWidth > minWidth) { document.getElementById('map_canvas').style.width = currWidth - 5+ "px"; }
-			//console.log(currWidth,currHeight, userCustomSizeDiff);
-			settingsObj['userCustomSize'] = (currWidth+userCustomSizeDiff[0])+"_"+(userCustomSizeDiff[1]+currHeight);
-			//setCookie("userCustomSize",(currWidth+[0])+"_"+(userCustomSizeDiff[1]+currHeight),366); // numbers seemed optimized for vista... too big for xp.
-			lastWidth = currWidth;
-			lastHeight = currHeight;
-			google.maps.event.trigger(map, 'resize');
-		}
-	};
+	window.attachEvent("onload",function () {    
+	//alert('foo');
+		window.setTimeout('onloadSetOnresize()',100);
+		//"self.resizeTo(settingsObj['userCustomSize'].split('_')[0],settingsObj['userCustomSize'].split('_')[1]);userCustomSizeDiff = [];userCustomSizeDiff[0] = settingsObj['userCustomSize'].split('_')[0] - document.documentElement.clientWidth;userCustomSizeDiff[1] = settingsObj['userCustomSize'].split('_')[1] - document.documentElement.clientHeight;",100);			
+	/*	window.onresize = function () {
+			var minHeight = 110, minWidth = 5;
+			var currHeight = document.documentElement.clientHeight;
+			var currWidth = document.documentElement.clientWidth;
+			if ((currWidth != lastWidth) || (currHeight != lastHeight)) {
+				if (currHeight > minHeight) { document.getElementById('map_canvas').style.height = currHeight - 110 + 'px'; }
+				if (currWidth > minWidth) { document.getElementById('map_canvas').style.width = currWidth - 5+ "px"; }
+				//console.log(currWidth,currHeight, userCustomSizeDiff);
+				settingsObj['userCustomSize'] = (currWidth+userCustomSizeDiff[0])+"_"+(userCustomSizeDiff[1]+currHeight);
+				//setCookie("userCustomSize",(currWidth+[0])+"_"+(userCustomSizeDiff[1]+currHeight),366); // numbers seemed optimized for vista... too big for xp.
+				lastWidth = currWidth;
+				lastHeight = currHeight;
+				google.maps.event.trigger(map, 'resize');
+			}
+		};*/
+	});
 	if (map.enableScrollWheelZoom)
 		map.enableScrollWheelZoom();  // ScrollWheel plugin library
 	if (map.enableKeyDragZoom)	
@@ -564,6 +570,33 @@ function initialize() {
 	});	
   
   }
+  
+  function onloadSetOnresize () {
+  self.resizeTo(settingsObj['userCustomSize'].split('_')[0],settingsObj['userCustomSize'].split('_')[1]);
+  userCustomSizeDiff = [];
+  userCustomSizeDiff[0] = settingsObj['userCustomSize'].split('_')[0] - document.documentElement.clientWidth;		
+  userCustomSizeDiff[1] = settingsObj['userCustomSize'].split('_')[1] - document.documentElement.clientHeight;
+  	document.getElementById('map_canvas').style.height = Math.abs(document.documentElement.clientHeight - 110) + 'px';
+	document.getElementById('map_canvas').style.width = Math.abs(document.documentElement.clientWidth - 5)+ "px";
+
+	window.onresize = function () {
+		var minHeight = 110, minWidth = 5;
+		var currHeight = document.documentElement.clientHeight;
+		var currWidth = document.documentElement.clientWidth;
+		if ((currWidth != lastWidth) || (currHeight != lastHeight)) {
+			if (currHeight > minHeight) { document.getElementById('map_canvas').style.height = currHeight - 110 + 'px'; }
+			if (currWidth > minWidth) { document.getElementById('map_canvas').style.width = currWidth - 5+ "px"; }
+			//console.log(currWidth,currHeight, userCustomSizeDiff);
+			settingsObj['userCustomSize'] = (currWidth+userCustomSizeDiff[0])+"_"+(userCustomSizeDiff[1]+currHeight);
+			//setCookie("userCustomSize",(currWidth+[0])+"_"+(userCustomSizeDiff[1]+currHeight),366); // numbers seemed optimized for vista... too big for xp.
+			lastWidth = currWidth;
+			lastHeight = currHeight;
+			google.maps.event.trigger(map, 'resize');
+		}
+	};
+  //alert('bar' + settingsObj['userCustomSize']);
+  }
+  
  Proj4js.defs["EPSG:4326"] = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
  Proj4js.defs["EPSG:26901"] = "+proj=utm +zone=1 +ellps=GRS80 +datum=NAD83 +units=m +no_defs";
  Proj4js.defs["EPSG:26902"] = "+proj=utm +zone=2 +ellps=GRS80 +datum=NAD83 +units=m +no_defs";
