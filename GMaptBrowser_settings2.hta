@@ -330,6 +330,7 @@ function clearCookies() {
 	setCookie("userZoomControl","",expDate);
 	setCookie("userCustomSize","",expDate);
 	setCookie("maptFcn","",expDate);
+	setCookie("cookieArray1","",expDate);
 }
 
 function getCookie(c_name) {
@@ -430,11 +431,12 @@ maptScales[23]=39;
 
 
 
+var userCustomSize, maptitudeFunctions, zoomControl, prevZoomControl, lastWidth,lastHeight;
+var  userCustomSizeDiff;
+/*
+var userCustomSize = getCookie("userCustomSize") || "600x500";
 
-
-var userCustomSize = getCookie("userCustomSize") || "600|500";
-
-window.resizeTo(userCustomSize.split("|")[0],userCustomSize.split("|")[1]);
+//window.resizeTo(userCustomSize.split("_")[0],userCustomSize.split("_")[1]);
 
 var userCustomSizeDiff = [];
 	userCustomSizeDiff[0] = userCustomSize.split("|")[0] - document.documentElement.clientWidth;
@@ -444,6 +446,8 @@ var maptitudeFunctions = getCookie("maptFcn") || 1;
 var zoomControl = getCookie("userZoomControl") || "ZOOM_PAN";
 var prevZoomControl = zoomControl;
 var lastWidth,lastHeight;
+
+*/
 //function getGeonamesAtCoord (gLon,gLat) {
 	// http://ws.geonames.org/findNearbyPlaceNameJSON?lat=47.3&lng=9
 //}
@@ -496,8 +500,25 @@ function zoomMapt () {
 }
 
 function initialize() {
-initSettings();
-	self.resizeTo(userCustomSize.split("|")[0],userCustomSize.split("|")[1]);
+	initSettings();
+	console.log(settingsObj);
+	//	if (settingsObj['userCustomSize'].indexOf('NaN') > -1) settingsObj['userCustomSize']=getDefaultSetting('userCustomSize');
+		userCustomSize = settingsObj['userCustomSize'];
+		//console.log(userCustomSize);
+		
+		userCustomSizeDiff = [];
+			userCustomSizeDiff[0] = userCustomSize.split("_")[0] - document.documentElement.clientWidth;
+			userCustomSizeDiff[1] = userCustomSize.split("_")[1] - document.documentElement.clientHeight;
+		//console.log('diff',userCustomSizeDiff);
+		 maptitudeFunctions =settingsObj['maptFcn'];  // note, previously this was a 0/1, now is 'ON'/'OFF'
+		 zoomControl = settingsObj["userZoomControl"];
+		 prevZoomControl = zoomControl;
+
+
+
+	
+	
+	//self.resizeTo(userCustomSize.split("_")[0],userCustomSize.split("_")[1]);
 	var navStyle = {};
 /*	if (zoomControl == "ZOOM_PAN") {
 		navStyle.style = google.maps.NavigationControlStyle.ZOOM_PAN;
@@ -533,14 +554,17 @@ initSettings();
   
 	window.onresize = function () {
 	var minHeight = 110, minWidth = 5;
-		var currHeight = document.documentElement.clientHeight, currWidth = document.documentElement.clientWidth;
+		var currHeight = document.documentElement.clientHeight;
+		var currWidth = document.documentElement.clientWidth;
 		if ((currWidth != lastWidth) || (currHeight != lastHeight)) {
-		if (currHeight > minHeight) { document.getElementById('map_canvas').style.height = currHeight - 110 + 'px'; }
-		if (currWidth > minWidth) { document.getElementById('map_canvas').style.width = currWidth - 5+ "px"; }
-		setCookie("userCustomSize",(currWidth+userCustomSizeDiff[0])+"|"+(userCustomSizeDiff[1]+currHeight),366); // numbers seemed optimized for vista... too big for xp.
-		lastWidth = currWidth;
-		lastHeight = currHeight;
-		google.maps.event.trigger(map, 'resize');
+			if (currHeight > minHeight) { document.getElementById('map_canvas').style.height = currHeight - 110 + 'px'; }
+			if (currWidth > minWidth) { document.getElementById('map_canvas').style.width = currWidth - 5+ "px"; }
+			console.log(currWidth,currHeight, userCustomSizeDiff);
+			settingsObj['userCustomSize'] = (currWidth+userCustomSizeDiff[0])+"_"+(userCustomSizeDiff[1]+currHeight);
+			//setCookie("userCustomSize",(currWidth+[0])+"_"+(userCustomSizeDiff[1]+currHeight),366); // numbers seemed optimized for vista... too big for xp.
+			lastWidth = currWidth;
+			lastHeight = currHeight;
+			google.maps.event.trigger(map, 'resize');
 		}
 	};
 	if (map.enableScrollWheelZoom)
@@ -558,7 +582,8 @@ initSettings();
 		if (!marker) {generateMarker(event.latLng);}
 		if (marker) { // gratuitous test.
 			marker.set_position(event.latLng);
-			if (document.getElementById("zoomMaptOnClick").checked) {
+			//if (document.getElementById("zoomMaptOnClick_DOM").checked) {
+			if (settingsObj["zoomMaptOnClick"]  == "ON") {
 				zoomMaptitudeTo(event.latLng.lng(),event.latLng.lat()); 
 				}
 		geocoder.geocode({'latLng':marker.get_position()},reverseGeocodeHandler);
