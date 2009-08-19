@@ -413,10 +413,8 @@ var prevZoomControl = zoomControl;
 var lastWidth,lastHeight;
 
 */
-//function getGeonamesAtCoord (gLon,gLat) {
-	// http://ws.geonames.org/findNearbyPlaceNameJSON?lat=47.3&lng=9
-//}
 
+/*
 function setHideMapt() {
 	if (document.getElementById("hideMaptButton").checked) {
 		document.getElementById("zoomMaptOnSearch").checked = false;
@@ -434,7 +432,7 @@ function setHideMapt() {
 		document.getElementById("useGoogleZoomForMapt").disabled=false;
 		setCookie("maptFcn",1,366);
 	}
-}
+} */
 
 function zoomMaptitudeTo(gLon,gLat){
 	var googleZoom = 2000;
@@ -447,12 +445,14 @@ function zoomMaptitudeTo(gLon,gLat){
 	try {
 		Gisdk = new ActiveXObject("Maptitude.AutomationServer");
 		thisMap = Gisdk.Function("GetMap");
+		//if (thisMap) {
 		var thisCoord = Gisdk.Function("Coord",lonMil,latMil);
 		Gisdk.Function("CenterMap",thisMap,thisCoord);
 		Gisdk.Function("SetScale",thisMap,googleZoom);
 		Gisdk.Function("RedrawMap",thisMap);
+		//}
 	} catch (err) {
-		alert ('Please make sure that maptitude is open, and the map you wish to view is loaded.');
+		alert ('Please make sure that maptitude is open, and the map you wish to view is loaded. ');
 		//console.log(err);
 	}
 }
@@ -518,26 +518,12 @@ function initialize() {
 	document.getElementById('map_canvas').style.height = Math.abs(lastHeight - 110) + 'px';
 	document.getElementById('map_canvas').style.width = Math.abs(lastWidth - 5)+ "px";
   
+  
 	window.attachEvent("onload",function () {    
-	//alert('foo');
-		window.setTimeout('onloadSetOnresize()',100);
-		//"self.resizeTo(settingsObj['userCustomSize'].split('_')[0],settingsObj['userCustomSize'].split('_')[1]);userCustomSizeDiff = [];userCustomSizeDiff[0] = settingsObj['userCustomSize'].split('_')[0] - document.documentElement.clientWidth;userCustomSizeDiff[1] = settingsObj['userCustomSize'].split('_')[1] - document.documentElement.clientHeight;",100);			
-	/*	window.onresize = function () {
-			var minHeight = 110, minWidth = 5;
-			var currHeight = document.documentElement.clientHeight;
-			var currWidth = document.documentElement.clientWidth;
-			if ((currWidth != lastWidth) || (currHeight != lastHeight)) {
-				if (currHeight > minHeight) { document.getElementById('map_canvas').style.height = currHeight - 110 + 'px'; }
-				if (currWidth > minWidth) { document.getElementById('map_canvas').style.width = currWidth - 5+ "px"; }
-				//console.log(currWidth,currHeight, userCustomSizeDiff);
-				settingsObj['userCustomSize'] = (currWidth+userCustomSizeDiff[0])+"_"+(userCustomSizeDiff[1]+currHeight);
-				//setCookie("userCustomSize",(currWidth+[0])+"_"+(userCustomSizeDiff[1]+currHeight),366); // numbers seemed optimized for vista... too big for xp.
-				lastWidth = currWidth;
-				lastHeight = currHeight;
-				google.maps.event.trigger(map, 'resize');
-			}
-		};*/
-	});
+		onloadSetOnresize();
+		});
+
+
 	if (map.enableScrollWheelZoom)
 		map.enableScrollWheelZoom();  // ScrollWheel plugin library
 	if (map.enableKeyDragZoom)	
