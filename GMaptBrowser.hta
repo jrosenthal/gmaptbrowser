@@ -401,7 +401,7 @@ function initialize() {
 		if (settingsObj['userCustomSize'].indexOf('NaN') > -1) settingsObj['userCustomSize']=getDefaultSetting('userCustomSize');
 		userCustomSize = settingsObj['userCustomSize'];
 
-		userCustomSizeDiff = [0,0]; // safe defaults - moved main code into onload that adds window.onresize
+		//userCustomSizeDiff = [0,0]; // safe defaults - moved main code into onload that adds window.onresize
 		
 		 maptitudeFunctions =settingsObj['maptFcn'];  // note, previously this was a 0/1, now is 'ON'/'OFF'
 		 zoomControl = settingsObj["userZoomControl"];
@@ -476,10 +476,19 @@ function initialize() {
   }
   
   function onloadSetOnresize () {
-  self.resizeTo(settingsObj['userCustomSize'].split('_')[0],settingsObj['userCustomSize'].split('_')[1]);
+  var tempX = settingsObj['userCustomSize'].split('_')[0], tempY = settingsObj['userCustomSize'].split('_')[1];
+  
+  try {
+  self.resizeTo(tempX,tempY);
+  
   userCustomSizeDiff = [];
   userCustomSizeDiff[0] = settingsObj['userCustomSize'].split('_')[0] - document.documentElement.clientWidth;		
   userCustomSizeDiff[1] = settingsObj['userCustomSize'].split('_')[1] - document.documentElement.clientHeight;
+	} catch (e) {
+	  userCustomSizeDiff = [];
+	  setTimeout("try{self.resizeTo(settingsObj['userCustomSize'].split('_')[0],settingsObj['userCustomSize'].split('_')[1]);}catch(e){}",1);
+	}
+
   	document.getElementById('map_canvas').style.height = Math.abs(document.documentElement.clientHeight - 110) + 'px';
 	document.getElementById('map_canvas').style.width = Math.abs(document.documentElement.clientWidth - 5)+ "px";
 
@@ -487,6 +496,10 @@ function initialize() {
 		var minHeight = 110, minWidth = 5;
 		var currHeight = document.documentElement.clientHeight;
 		var currWidth = document.documentElement.clientWidth;
+		  if (userCustomSizeDiff.length == 0) {
+			  userCustomSizeDiff[0] = settingsObj['userCustomSize'].split('_')[0] - document.documentElement.clientWidth;		
+			  userCustomSizeDiff[1] = settingsObj['userCustomSize'].split('_')[1] - document.documentElement.clientHeight;
+			}
 		if ((currWidth != lastWidth) || (currHeight != lastHeight)) {
 			if (currHeight > minHeight) { document.getElementById('map_canvas').style.height = currHeight - 110 + 'px'; }
 			if (currWidth > minWidth) { document.getElementById('map_canvas').style.width = currWidth - 5+ "px"; }
