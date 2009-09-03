@@ -469,9 +469,10 @@ function initialize() {
 		}
 	});	
 // This next event listener appears to be necessary, as panning off the edge of the world causes an error.  While ignorable in many browsers, it gives an error dialog in HTAs.
-  	google.maps.event.addListener(map,'zoom_changed',function(event) {
+// FIXED, as of 09/02/2009 API release
+/*  	google.maps.event.addListener(map,'zoom_changed',function(event) {
 		if (map.get_zoom() < maxZoomLevel) map.set_zoom(maxZoomLevel);
-	});	
+	});	*/
   
   }
   
