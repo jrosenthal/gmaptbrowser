@@ -21,7 +21,7 @@ GMaptBrowser written and released by Joshua Rosenthal (maric423+gmb@gmail.com) u
 
 0.989 - Allow users to click on the map and use all functionality without searching first.
 0.988 - Added scroll wheel zoom using google maps utility library scroll wheel zoom as per - http://google-maps-utility-library-v3.googlecode.com/svn/tags/scrollwheelzoom/1.0/docs/reference.html
-      - Bugfix: failed to pan when set_center short distance away. Workaround: put set_zoom first (bug 1567)
+      - Bugfix: failed to pan when setCenter short distance away. Workaround: put setZoom first (bug 1567)
 	  - 11 August 2009
 0.987 - update for draggable markers
 0.986 - update for google.maps.event.trigger(map, 'resize')
@@ -370,7 +370,7 @@ function zoomMaptitudeTo(gLon,gLat){
 	var googleZoom = 2000;
 	if (settingsObj["useGoogleZoomForMapt"]=="ON") 
 		{
-			googleZoom = parseInt(maptScales[map.get_zoom()]);
+			googleZoom = parseInt(maptScales[map.getZoom()]);
 		}
 	var lonMil = Math.round(gLon*1000000);
     var latMil = Math.round(gLat*1000000);
@@ -392,7 +392,7 @@ function zoomMaptitudeTo(gLon,gLat){
 function zoomMapt () {
 // just a wrapper for ZoomMaptitudeTo(lon,lat) which adds in a check before referencing markers.
 	if (marker) {
-	   zoomMaptitudeTo(marker.get_position().lng(),marker.get_position().lat());
+	   zoomMaptitudeTo(marker.getPosition().lng(),marker.getPosition().lat());
 	   }
 }
 
@@ -458,20 +458,20 @@ function initialize() {
 	google.maps.event.addListener(map,'click',function(event) {
 		if (!marker) {generateMarker(event.latLng);}
 		if (marker) { // gratuitous test.
-			marker.set_position(event.latLng);
+			marker.setPosition(event.latLng);
 			if ((settingsObj['maptFcn'] == "ON") && (settingsObj["zoomMaptOnClick"] == "ON")) {
 				zoomMaptitudeTo(event.latLng.lng(),event.latLng.lat()); 
 				}
 			if (settingsObj["runAppOnClick"] == "ON" && settingsObj["userAppName"] != "IGNORE" && settingsObj["userAppName"] != "NO APP CHOSEN") {
 				document.getElementById("externalAppButton").onclick();
 				}					
-		geocoder.geocode({'latLng':marker.get_position()},reverseGeocodeHandler);
+		geocoder.geocode({'latLng':marker.getPosition()},reverseGeocodeHandler);
 		}
 	});	
 // This next event listener appears to be necessary, as panning off the edge of the world causes an error.  While ignorable in many browsers, it gives an error dialog in HTAs.
 // FIXED, as of 09/02/2009 API release
 /*  	google.maps.event.addListener(map,'zoom_changed',function(event) {
-		if (map.get_zoom() < maxZoomLevel) map.set_zoom(maxZoomLevel);
+		if (map.getZoom() < maxZoomLevel) map.setZoom(maxZoomLevel);
 	});	*/
   
   }
@@ -565,8 +565,8 @@ function codeAddress() {
         // You should always check that a result was returned, as it is
         // possible to return an empty results object.
         if (status != google.maps.GeocoderStatus.ZERO_RESULTS) {
-			map.set_zoom(17); // needs to be before set_center in order to allow moving the map small amounts (bug 1567)
-	        map.set_center(results[0].geometry.location);
+			map.setZoom(17); // needs to be before setCenter in order to allow moving the map small amounts (bug 1567)
+	        map.setCenter(results[0].geometry.location);
 			displayCoords(results[0].geometry.location.lat(),results[0].geometry.location.lng());
 			document.getElementById('geocode_label').innerHTML = "Geocode";
 			document.getElementById('geocode_results').innerHTML = results[0].formatted_address;
@@ -585,7 +585,7 @@ function codeAddress() {
 				}			
 			
           if (marker) {
-            marker.set_position(results[0].geometry.location);
+            marker.setPosition(results[0].geometry.location);
           }
           else {
 			generateMarker(results[0].geometry.location);
@@ -601,14 +601,14 @@ function codeAddress() {
 		if (decDegAddress) {
 			var thisLoc = new google.maps.LatLng(parseFloat(decDegAddress[0].split(",")[0]),parseFloat(decDegAddress[0].split(",")[1]));
 			if (marker) {
-				marker.set_position(thisLoc);
+				marker.setPosition(thisLoc);
 			} else { // else, generate and wireup marker - need to abstract that code.
 				generateMarker(thisLoc);
 				}
 				
-			map.set_zoom(17);	// needs to be before set_center in order to allow moving the map small amounts (bug 1567)
-			map.set_center(thisLoc);
-			geocoder.geocode({'latLng':marker.get_position()},reverseGeocodeHandler);	
+			map.setZoom(17);	// needs to be before setCenter in order to allow moving the map small amounts (bug 1567)
+			map.setCenter(thisLoc);
+			geocoder.geocode({'latLng':marker.getPosition()},reverseGeocodeHandler);	
 		} else {
 			var utmAddress = address.match(regexpUTM);
 			if (utmAddress) {
@@ -622,13 +622,13 @@ function codeAddress() {
 					Proj4js.transform(source, dest, p);      //do the transformation.  x and y are modified in place
 					var thisLoc = new google.maps.LatLng(p.y,p.x);
 						if (marker) {
-						marker.set_position(thisLoc);
+						marker.setPosition(thisLoc);
 					} else { // else, generate and wireup marker - need to abstract that code.
 						generateMarker(thisLoc);
 						}
-					map.set_zoom(17); // needs to be before set_center in order to allow moving the map small amounts (bug 1567)
-					map.set_center(thisLoc);
-					geocoder.geocode({'latLng':marker.get_position()},reverseGeocodeHandler);
+					map.setZoom(17); // needs to be before setCenter in order to allow moving the map small amounts (bug 1567)
+					map.setCenter(thisLoc);
+					geocoder.geocode({'latLng':marker.getPosition()},reverseGeocodeHandler);
 				}
 			}
 		}
@@ -665,22 +665,22 @@ function generateMarker(loc)  {
 	// Moved the map event click listener to Initialize
 	google.maps.event.addListener(marker,'position_changed',function(event) {
 		if (!birdseye_is_closed()) {  // if birdseye window is not closed (true), or truthy (unavail)
-			var curr_url = "http://www.bing.com/maps/default.aspx?cp=" + marker.get_position().lat() + "~" + marker.get_position().lng() + "&style=o&lvl=2&v=2";
+			var curr_url = "http://www.bing.com/maps/default.aspx?cp=" + marker.getPosition().lat() + "~" + marker.getPosition().lng() + "&style=o&lvl=2&v=2";
 			birdseye_window.location = curr_url;
 			birdseye_window.focus();
 		}
-		displayCoords(marker.get_position().lat(), marker.get_position().lng());
+		displayCoords(marker.getPosition().lat(), marker.getPosition().lng());
 		// don't reverse geocode here because it will reverse geocode after geocode. Rather, reverse Geocode on mapClick and Marker dragend
 	});
 	google.maps.event.addListener(marker,'dragend',function(event) {
-		geocoder.geocode({'latLng':marker.get_position()},reverseGeocodeHandler);
+		geocoder.geocode({'latLng':marker.getPosition()},reverseGeocodeHandler);
 	});
 	
 }
 
 function open_birdseye() {
     if (birdseye_is_closed()) {
-        var curr_url = "http://www.bing.com/maps/default.aspx?cp=" + marker.get_position().lat() + "~" + marker.get_position().lng() + "&style=o&lvl=2&v=2";
+        var curr_url = "http://www.bing.com/maps/default.aspx?cp=" + marker.getPosition().lat() + "~" + marker.getPosition().lng() + "&style=o&lvl=2&v=2";
 		birdseye_window = window.open(curr_url,'birdseye_window','location=no,resizable=-1,menubar=no,toolbar=no,scrollbars=yes,width=900,height=600');
         if (birdseye_is_closed() != "unavail") {
             birdseye_window.focus();
