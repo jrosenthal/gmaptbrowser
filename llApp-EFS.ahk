@@ -1,14 +1,16 @@
 IfWinExist, ElectronicFieldStudy
+; 2.7 v 10, 11
 {
 
 	IfWinExist, Go to...
 	{
 		WinClose, Go to...
 	}
-
-	    	WinActivate, ElectronicFieldStudy
-    SendInput ^g 
+   	WinActivate, ElectronicFieldStudy
+    ;SendInput ^g 
     ;!ng
+	SendInput !n
+	SendInput g
     WinWait, Go to...,,3
     if (ErrorLevel=0) 
     {
@@ -22,6 +24,7 @@ IfWinExist, ElectronicFieldStudy
 else
 {
 IfWinExist, Pictometry EFS
+; 2.7 v 12
 {
 
 	IfWinExist, Go to...
@@ -31,7 +34,8 @@ IfWinExist, Pictometry EFS
 
 	    	WinActivate, Pictometry EFS
     SendInput ^g 
-    ;!ng
+    ;SendInput !n
+	;SendInput g
     WinWait, Go to...,,3
     if (ErrorLevel=0) 
     {
